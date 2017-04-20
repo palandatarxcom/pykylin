@@ -136,22 +136,16 @@ class KylinDialect(default.DefaultDialect):
 
     def create_connect_args(self, url):
         opts = url.translate_connect_args()
-        api_prefix = 'kylin/api/'
         args = {
             'username': opts['username'],
             'password': opts['password'],
-            'endpoint': 'http://%s:%s/%s' % (opts['host'], opts['port'], api_prefix)
+            'endpoint': 'http://%s:%s/%s' % (opts['host'], opts['port'], opts['database'])
         }
         args.update(url.query)
         return [], args
 
     def get_table_names(self, connection, schema=None, **kw):
-        connection = engine.contextual_connect()
         return connection.connection.list_tables()
-
-    def get_schema_names(self, engine, schema=None, **kw):  
-        connection = engine.contextual_connect()
-        return connection.connection.list_schemas()
 
     def has_table(self, connection, table_name, schema=None):
         return table_name in self.get_table_names(connection, table_name, schema)

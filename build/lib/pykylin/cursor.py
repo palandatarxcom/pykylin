@@ -22,7 +22,7 @@ class Cursor(object):
     def close(self):
         logger.debug('Cursor close called')
 
-    def execute(self, operation, parameters={}, acceptPartial=True, limit=None, offset=0):  
+    def execute(self, operation, parameters={}, acceptPartial=True, limit=None, offset=0):
         sql = operation % parameters
         data = {
             'sql': sql,
@@ -35,11 +35,6 @@ class Cursor(object):
         resp = self.connection.proxy.post('query', json=data)
 
         column_metas = resp['columnMetas']
-
-        for c in column_metas:
-            c['label'] = str(c['label']).lower()
-            c['name'] = str(c['name']).lower()
-
         self.description = [
             [c['label'], c['columnTypeName'],
              c['displaySize'], 0,
@@ -52,16 +47,14 @@ class Cursor(object):
         self.fetched_rows = 0
         return self.rowcount
 
-    def _type_mapped(self, result):  
+    def _type_mapped(self, result):
         meta = self.description
         size = len(meta)
         for i in range(0, size):
             column = meta[i]
             tpe = column[1]
             val = result[i]
-            if val is None:
-                pass
-            elif tpe == 'DATE':
+            if tpe == 'DATE':
                 val = parser.parse(val)
             elif tpe == 'BIGINT' or tpe == 'INT' or tpe == 'TINYINT':
                 val = int(val)
