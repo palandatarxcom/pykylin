@@ -145,7 +145,7 @@ class KylinDialect(default.DefaultDialect):
         args.update(url.query)
         return [], args
 
-    def get_table_names(self, connection, schema=None, **kw):
+    def get_table_names(self, engine, schema=None, **kw):
         connection = engine.contextual_connect()
         return connection.connection.list_tables()
 
